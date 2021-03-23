@@ -3,13 +3,7 @@ import argparse
 import os
 from verbose import Verbose
 
-# /home/tomek-dev/projects/testing/wp-updates-prep/srv
-
-def exit_program(msg):
-    print(msg)
-    sys.exit(2)    
-
-def main(argv):
+def init():
     parser = argparse.ArgumentParser()
     parser.add_argument("--domain", "-d", action="store", dest="domain", help="If left blank, permissions will run on all domains in the webroot", type=str, default=False)
     parser.add_argument("--verbose", "-v", action="store_true", help="Print all actions taken by this script")
@@ -22,11 +16,17 @@ def main(argv):
     required.add_argument("--level", "-l", action="store", dest="level", help="Set strictness level", type=int, required=True)
 
     try:
-        args = parser.parse_args()
+        return parser.parse_args()
     except IOError as err:
         parser.error(str(err))
         sys.exit(2)
 
+def exit_program(msg):
+    print(msg)
+    sys.exit(2)    
+
+def main(argv):
+    args = init()
     v = Verbose(args.verbose)
     args.webroot = args.webroot.rstrip("/") + "/"
     args.siteroot = args.siteroot.lstrip("/")
