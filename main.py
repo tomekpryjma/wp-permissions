@@ -40,7 +40,7 @@ def main(argv):
 
         sitepath = args.webroot + directory + "/" + args.siteroot
 
-        if os.path.isdir(sitepath + "wp-admin"): # Check if directory uses WordPress
+        if not os.path.isdir(sitepath + "wp-admin"): # Check if directory uses WordPress
             v.print(directory + " does not use WordPress, skipping...")
             continue
         
