@@ -1,6 +1,7 @@
 import sys
 import argparse
 import os
+from pwd import getpwname
 from verbose import Verbose
 
 def init():
@@ -23,7 +24,19 @@ def init():
 
 def exit_program(msg):
     print(msg)
-    sys.exit(2)    
+    sys.exit(2)
+
+def strict_permissions(sitepath, owner, group):
+    # TODO: Run checks to determine whether the user id's were successfully retrieved
+    owner_user_uid = getpwname(owner).pw_uid
+    group_user_uid = getpwname(group).pw_uid
+
+    for root, dirs, files in os.walk(sitepath):
+        for d in dirs:
+            print(os.path.join(root, d))
+            # os.chown(os.path.join(root))
+        for f in files:
+            print(os.path.join(root, f))
 
 def main(argv):
     args = init()
@@ -44,7 +57,8 @@ def main(argv):
             v.print(directory + " does not use WordPress, skipping...")
             continue
         
-
+        if args.level == 1:
+            strict_permissions(sitepath, args.admin_user, args.web_user)
 
 if __name__ == "__main__":
     main(sys.argv)
