@@ -1,7 +1,7 @@
 import sys
 import argparse
 import os
-from pwd import getpwname
+import pwd
 from verbose import Verbose
 
 def init():
