@@ -19,8 +19,7 @@ def init():
     try:
         return parser.parse_args()
     except IOError as err:
-        parser.error(str(err))
-        sys.exit(2)
+        exit_program(err)
 
 def exit_program(msg):
     print(msg)
