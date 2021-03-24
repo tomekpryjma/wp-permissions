@@ -26,9 +26,14 @@ def exit_program(msg):
     sys.exit(2)
 
 def strict_permissions(sitepath, owner, group):
-    # TODO: Run checks to determine whether the user id's were successfully retrieved
-    owner_user_uid = getpwname(owner).pw_uid
-    group_user_uid = getpwname(group).pw_uid
+    try:
+        owner_user_uid = pwd.getpwnam(owner).pw_uid
+        group_user_uid = pwd.getpwnam(group).pw_uid
+    except KeyError as err:
+        exit_program(err)
+
+    print(owner + " = " + str(owner_user_uid))
+    print(group + " = " + str(group_user_uid))
 
     for root, dirs, files in os.walk(sitepath):
         for d in dirs:
