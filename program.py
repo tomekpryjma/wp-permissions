@@ -90,6 +90,20 @@ class Program:
             self.chown(gitignore, uids[0], uids[0])
             self.chmod(gitignore, self.file_octal)
 
+    def domain_execute(self, sitepath, directory):
+        if not os.path.isdir(sitepath):
+            print("The specified sitepath does not exist: " + sitepath)
+            return False
+
+        if not os.path.isdir(sitepath + "wp-admin"): # Check if directory uses WordPress
+            print(directory + " does not use WordPress, skipping...")
+            return False
+        
+        if self.args.level == 1:
+            self.strict_permissions(sitepath)
+        elif self.args.level == 2:
+            self.lax_permissions(sitepath)
+
     def run(self):
         self.args.webroot = self.args.webroot.rstrip("/") + "/"
         self.args.siteroot = self.args.siteroot.lstrip("/")
@@ -98,20 +112,13 @@ class Program:
         if not os.path.isdir(self.args.webroot):
             self.exit_program("The specified webroot does not exist: " + self.args.webroot)
 
-        for directory in os.listdir(self.args.webroot):
-            if directory.startswith("."): continue
+        if self.args.domain:
+            sitepath = self.args.webroot + self.args.domain + "/" + self.args.siteroot
+            self.domain_execute(sitepath, self.args.domain)
+        else:
+            for directory in os.listdir(self.args.webroot):
+                if directory.startswith("."): continue
 
-            sitepath = self.args.webroot + directory + "/" + self.args.siteroot
+                sitepath = self.args.webroot + directory + "/" + self.args.siteroot
 
-            if not os.path.isdir(sitepath):
-                self.v.print("The specified sitepath does not exist: " + sitepath)
-                continue
-
-            if not os.path.isdir(sitepath + "wp-admin"): # Check if directory uses WordPress
-                self.v.print(directory + " does not use WordPress, skipping...")
-                continue
-            
-            if self.args.level == 1:
-                self.strict_permissions(sitepath)
-            elif self.args.level == 2:
-                self.lax_permissions(sitepath)
+                if not self.domain_execute(sitepath, directory): continue
